@@ -1,6 +1,8 @@
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { type } from "os";
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import TodoCard from "./TodoCard";
 
 interface Props {
   id: TypedColumn;
@@ -40,6 +42,36 @@ function Column({ id, todos, index }: Props) {
                   {idToColumnText[id]} {/*  */}
                   <span className="text-gray-500 bg-grey-200 rounded-full px-2 py-1 text-sm font-normal"></span>
                 </h2>
+                {/* ToDo item under */}
+                <div className="space-2">
+                  {/* ToDo Card that is  a draggable element */}
+                  {todos.map((todo, index) => (
+                    <Draggable
+                      key={todo.$id}
+                      draggableId={todo.$id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <TodoCard
+                          todo={todo}
+                          index={index}
+                          id={id}
+                          innerRef={provided.innerRef}
+                          draggableProps={provided.draggableProps}
+                          dragHandleProps={provided.dragHandleProps}
+                        />
+                      )}
+                    </Draggable>
+                  ))}
+                  {/* After rendering all above, create space to accommodate when cards move after */}
+                  {provided.placeholder}
+                  {/* Below is the modal button to add a todo */}
+                  <div className="flex items-end justify-end p-2">
+                    <button className="text-green-500 hover:text-green-800">
+                        <PlusCircleIcon className="h-10 w-10 "/>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </Droppable>

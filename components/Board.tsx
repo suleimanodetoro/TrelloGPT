@@ -20,6 +20,21 @@ function Board() {
     
     console.log(board);
     const handleOnDragEnd = (result: DropResult)=>{
+        // Result should contain type of drop, source, and destination
+        const { destination, type, source } = result;
+
+        // If the user drags but does not take to any column(destination), return
+        if(!destination){
+            return;
+        }
+
+        // Handle dragging an entire column --- different from task drag
+        if (type === 'column') {
+            // First step is to get the board column entries, and convert to array (currently a map)
+            const entries = Array.from(board.columns.entries());
+            // splice the array, take the postion
+            
+        }
         return console.log('Hello world');
         
 

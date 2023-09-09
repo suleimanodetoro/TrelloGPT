@@ -7,6 +7,7 @@ import { getTodosGroupedByColumn } from '@/lib/getTodosGroupedByColumn';
 interface BoardState {
     board: Board;
     getBoard: () => void;
+    setBoardState: (board: Board) => void;
 
 }
 
@@ -20,7 +21,11 @@ export const useBoardStore = create<BoardState>()((set, get) => ({
         //This will set the global state
         set({ board });
 
-    }
+    },
+    // create setBoard State
+    // Take board passed and set to global state
+    setBoardState: (board) => set({board})
+
 
 }))
 

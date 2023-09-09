@@ -16,34 +16,97 @@ function Board() {
     // call getBoard and give access to this data all around the application. We will use zustand instead of redux for this...
   }, [getBoard]);
 
-  console.log(board);
   const handleOnDragEnd = (result: DropResult) => {
     // Result should contain type of drop, source, and destination
-    const { destination, type, source } = result;
+    const { destination, source, type } = result;
 
     // If the user drags but does not take to any column(destination), return
-    if (!destination) {
-      return;
-    }
+    if (!destination) return;
 
     // Handle dragging an entire column --- different from task drag
     if (type === "column") {
       // First step is to get the board column entries, and convert to array (currently a map)
       const entries = Array.from(board.columns.entries());
-      console.log('Entries: ', entries);
-      
+
       // splice the array, take from the source index -- basically store the element we are moving about
       const [removed] = entries.splice(source.index, 1);
-      console.log("Removed is: ", removed);
+
       // splice the array, push the removed column into an array of entries- most importantly in the correct position I dropped it in
       entries.splice(destination.index, 0, removed);
-      console.log("New data is: ", entries.splice(destination.index, 0, removed));
-    //   create a new map of the rearranged columns and store that in the board state
-    const rearrangedColumn = new Map(entries);
-    //set board state to new value -- setBoardState in store
-    // keep everything in already on the board, change the column (To Do, In Progress, or Done Column)
-    setBoardState({...board, columns: rearrangedColumn})
 
+      //   create a new map of the rearranged columns and store that in the board state
+      const rearrangedColumns = new Map(entries);
+      //set board state to new value -- setBoardState in store
+      // keep everything in already on the board, change the column (To Do, In Progress, or Done Column)
+      setBoardState({ ...board, columns: rearrangedColumns });
+      return;
+    }
+    // The following are to handle cards in columns moving around, and also to other columns
+
+    // Columns, Start & Finish Indexs are necessary to
+    const columns = Array.from(board.columns); // create a copy of the columns
+    //Since the index are stored as numbers 1,2,3, if we get the number, we know which column we are taking from, or taking to
+    // Debugging statements before the problematic code
+    const startColIndex = columns[Number(source.droppableId)]; // T
+    const finishColIndex = columns[Number(destination.droppableId)];
+
+    // Rebuild the start and finish column
+    const startColumn: Column = {
+      id: startColIndex[0],
+      todos: startColIndex[1].todos,
+    };
+
+    const finishColumn: Column = {
+      id: finishColIndex[0],
+      todos: finishColIndex[1].todos,
+    };
+
+    // Now that we have columns, time for conditional logic
+
+    // If we did not get the start or finish column for any reason, return
+    if (!startColumn || !finishColumn) return;
+
+    // If we get the columns, but after moving, items are still in previous positions, do nothing
+    if (source.index === destination.index && startColumn === finishColumn)
+      return;
+
+    // If we do have a change, store the todos in the starting column
+    const newTodos = startColumn.todos;
+    // splice the todo to be moved
+
+    const [todoMoved] = newTodos.splice(source.index, 1);
+
+    if (startColumn.id === finishColumn.id) {
+      // Meaning user is doing a same-column todo/task drag
+      newTodos.splice(destination.index, 0, todoMoved);
+      const newCol = {
+        id: startColumn.id,
+        todos: newTodos,
+      };
+      const newColumns = new Map(board.columns);
+      newColumns.set(startColumn.id, newCol);
+
+      setBoardState({ ...board, columns: newColumns });
+    } else {
+      // meaning user is dragging task from one column to another
+      const finishTodos = Array.from(finishColumn.todos);
+      finishTodos.splice(destination.index, 0, todoMoved);
+      // create a copy
+      const newColumns = new Map(board.columns);
+      const newCol = {
+        id: startColumn.id,
+        todos: newTodos,
+      };
+
+      // New column
+      newColumns.set(startColumn.id, newCol);
+      // Add to destination column
+      newColumns.set(finishColumn.id, {
+        id: finishColumn.id,
+        todos: finishTodos,
+      });
+
+      setBoardState({ ...board, columns: newColumns });
     }
   };
 

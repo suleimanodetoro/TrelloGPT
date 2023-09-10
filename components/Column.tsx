@@ -3,6 +3,7 @@ import { type } from "os";
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import TodoCard from "./TodoCard";
+import { useBoardStore } from "@/store/BoardStore";
 
 interface Props {
   id: TypedColumn;
@@ -19,6 +20,7 @@ const idToColumnText: {
   done: "Done",
 };
 function Column({ id, todos, index }: Props) {
+  const [searchString] = useBoardStore((state) => [state.searchString]);
   return (
     <Draggable draggableId={id} index={index}>
       {(provided) => (
@@ -27,7 +29,7 @@ function Column({ id, todos, index }: Props) {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
         >
-          {/* render nested droppable that is draggablew */}
+          {/* render nested droppable that is draggable */}
           <Droppable droppableId={index.toString()} type="card">
             {/* Snapshot element is used to know when you are dragging elements over to another card - turning green, red etc */}
             {(provided, snapshot) => (
@@ -45,30 +47,43 @@ function Column({ id, todos, index }: Props) {
                 {/* ToDo item under */}
                 <div className="space-2">
                   {/* ToDo Card that is  a draggable element */}
-                  {todos.map((todo, index) => (
-                    <Draggable
-                      key={todo.$id}
-                      draggableId={todo.$id}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <TodoCard
-                          todo={todo}
-                          index={index}
-                          id={id}
-                          innerRef={provided.innerRef}
-                          draggableProps={provided.draggableProps}
-                          dragHandleProps={provided.dragHandleProps}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
+                  {/* conditionally check if there is as string string, if so filter and map through todos that match the string, else just map as regular */}
+
+                  {todos.map((todo, index) => {
+                    if (
+                      searchString &&
+                      !todo.title
+                        .toLowerCase()
+                        .includes(searchString.toLocaleLowerCase())
+                    ) {
+                      return null; // Skip rendering this todo
+                    }
+
+                    return (
+                      <Draggable
+                        key={todo.$id}
+                        draggableId={todo.$id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <TodoCard
+                            todo={todo}
+                            index={index}
+                            id={id}
+                            innerRef={provided.innerRef}
+                            draggableProps={provided.draggableProps}
+                            dragHandleProps={provided.dragHandleProps}
+                          />
+                        )}
+                      </Draggable>
+                    );
+                  })}
                   {/* After rendering all above, create space to accommodate when cards move after */}
                   {provided.placeholder}
                   {/* Below is the modal button to add a todo */}
                   <div className="flex items-end justify-end p-2">
                     <button className="text-green-500 hover:text-green-800">
-                        <PlusCircleIcon className="h-10 w-10 "/>
+                      <PlusCircleIcon className="h-10 w-10 " />
                     </button>
                   </div>
                 </div>

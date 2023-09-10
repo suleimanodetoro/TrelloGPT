@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import Column from "./Column";
 
 function Board() {
-  const [board, getBoard, setBoardState] = useBoardStore((state) => [
+  const [board, getBoard, setBoardState, updateTodoInDB] = useBoardStore((state) => [
     state.board,
     state.getBoard,
     state.setBoardState,
+    state.updateTodoInDB
   ]);
 
   useEffect(() => {
@@ -105,7 +106,11 @@ function Board() {
         id: finishColumn.id,
         todos: finishTodos,
       });
+    //   update AppWrite database with new todo details
+    // Contains the todo/task, and the the columnID: TODO, INPROGRESS, OR DONE
+    updateTodoInDB(todoMoved, finishColumn.id);
 
+// save details to board store 
       setBoardState({ ...board, columns: newColumns });
     }
   };
@@ -126,6 +131,8 @@ function Board() {
             {Array.from(board.columns.entries()).map(([id, column], index) => (
               <Column key={id} id={id} todos={column.todos} index={index} />
             ))}
+                {provided.placeholder}
+
           </div>
         )}
       </Droppable>

@@ -3,11 +3,13 @@
 import { create } from 'zustand'
 import React from 'react';
 import { getTodosGroupedByColumn } from '@/lib/getTodosGroupedByColumn';
+import { databases } from '@/appwrite';
 
 interface BoardState {
     board: Board;
     getBoard: () => void;
     setBoardState: (board: Board) => void;
+    updateTodoInDB: (todo:Todo, columnID: TypedColumn)=>void;
 
 }
 
@@ -22,9 +24,21 @@ export const useBoardStore = create<BoardState>()((set, get) => ({
         set({ board });
 
     },
+    updateTodoInDB: async (todo, columnID) => {
+        await databases.updateDocument(
+            process.env.NEXT_PUBLIC_DATABASE_ID!, 
+            process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!, 
+            todo.$id,
+            // updated information ->
+            {
+                title: todo.title,
+                status: columnID,
+            },
+            );
+    },
     // create setBoard State
     // Take board passed and set to global state
-    setBoardState: (board) => set({board})
+    setBoardState: (board) => set({ board }),
 
 
 }))

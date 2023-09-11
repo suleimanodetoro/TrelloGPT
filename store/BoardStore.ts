@@ -75,7 +75,6 @@ export const useBoardStore = create<BoardState>()((set, get) => ({
         ...(file && { image: JSON.stringify(file) }),
       }
     );
-    console.log(file);
     
     // reset the task input so it's blank on next open
     set({ newTaskInput: "" });
@@ -102,7 +101,6 @@ export const useBoardStore = create<BoardState>()((set, get) => ({
       } else {
         newColumns.get(columnID)?.todos.push(newTodo);
       }
-      console.log(newColumns);
       
       return {
         board: {

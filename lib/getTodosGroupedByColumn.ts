@@ -9,7 +9,6 @@ export const getTodosGroupedByColumn = async () => {
   );
 
   const todos = data?.documents;
-  console.log(todos);
 
   // accumulator function to reduce todos down to a map
   // 'acc' starts off as a new map basically
@@ -60,7 +59,6 @@ export const getTodosGroupedByColumn = async () => {
   );
 
   const board: Board = { columns: sortedColumns };
-  console.log("columns in get func", columns);
 
   return board;
 };

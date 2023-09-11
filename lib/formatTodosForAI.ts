@@ -7,7 +7,6 @@ const formatTodosForAI = (board: Board) => {
         return map;
 
     }, {} as {[key in TypedColumn]: Todo[]})
-    console.log('Flat array', flatArray);
 
     // reduce to key:value(length)
     const flatArrayCounted = Object.entries(flatArray).reduce((map, [key,value]) => {
@@ -15,8 +14,6 @@ const formatTodosForAI = (board: Board) => {
         return map;
 
     }, {} as {[key in TypedColumn]: number})
-    console.log('Flat Counted Array to give AI', flatArrayCounted);
-
     return flatArrayCounted;
 };
 

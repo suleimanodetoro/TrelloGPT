@@ -23,7 +23,6 @@ function Header() {
   useEffect(()=>{
     // dont fetch suggestions if board columns are zero. Maps have size value
     if (board.columns.size === 0) {
-      console.log('Board has no columns?');
       return;
     }
     setLoading(true);

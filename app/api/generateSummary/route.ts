@@ -8,7 +8,6 @@ export async function POST(request: Request) {
   // parse in the todos of the the post request
 
   const { todos } = await request.json();
-  console.log(todos);
   // communicate with Open AI's endpoint
 try {
     const response = await openai.chat.completions.create({
@@ -31,9 +30,6 @@ try {
         ],
       });
       //    Once a response comes back, destructure it
-      console.log('Response is', response);
-      console.log('',response.choices[0].message);
-
       return NextResponse.json(response.choices[0].message);
       
        

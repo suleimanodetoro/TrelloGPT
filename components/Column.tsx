@@ -21,12 +21,17 @@ const idToColumnText: {
   done: "Done",
 };
 function Column({ id, todos, index }: Props) {
-  const [searchString] = useBoardStore((state) => [state.searchString]);
+  const [searchString, newTaskType, setNewTaskType] = useBoardStore((state) => [state.searchString, state.newTaskType, state.setNewTaskType]);
   const [isOpen, closeModal, openModal] = useModalStore((state)=>[
     state.isOpen,
     state.closeModal,
     state.openModal
   ])
+  // helper function to add and set task types
+  const handleAddTodo = () => {
+    setNewTaskType(id); //id from props. On click add on any column, the column type should be auto selected 
+    openModal();
+  }
 
   return (
     <Draggable draggableId={id} index={index}>
@@ -89,7 +94,7 @@ function Column({ id, todos, index }: Props) {
                   {provided.placeholder}
                   {/* Below is the modal button to add a todo */}
                   <div className="flex items-end justify-end p-2">
-                    <button  onClick={openModal} className="text-green-500 hover:text-green-800">
+                    <button  onClick={handleAddTodo} className="text-green-500 hover:text-green-800">
                       <PlusCircleIcon className="h-10 w-10 " />
                     </button>
                   </div>

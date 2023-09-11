@@ -4,6 +4,7 @@ import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import TodoCard from "./TodoCard";
 import { useBoardStore } from "@/store/BoardStore";
+import { useModalStore } from "@/store/ModalStore";
 
 interface Props {
   id: TypedColumn;
@@ -21,6 +22,12 @@ const idToColumnText: {
 };
 function Column({ id, todos, index }: Props) {
   const [searchString] = useBoardStore((state) => [state.searchString]);
+  const [isOpen, closeModal, openModal] = useModalStore((state)=>[
+    state.isOpen,
+    state.closeModal,
+    state.openModal
+  ])
+
   return (
     <Draggable draggableId={id} index={index}>
       {(provided) => (
@@ -82,7 +89,7 @@ function Column({ id, todos, index }: Props) {
                   {provided.placeholder}
                   {/* Below is the modal button to add a todo */}
                   <div className="flex items-end justify-end p-2">
-                    <button className="text-green-500 hover:text-green-800">
+                    <button  onClick={openModal} className="text-green-500 hover:text-green-800">
                       <PlusCircleIcon className="h-10 w-10 " />
                     </button>
                   </div>
